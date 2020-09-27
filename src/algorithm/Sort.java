@@ -21,6 +21,16 @@ public final class Sort {
     }
   }
 
+  public static void bubbleSort(int[] a){
+    for(int i=0; i<a.length;++i){
+      for(int j=a.length-2; j>=0;--j){
+        if (a[j] > a[j+1]){
+          swap(a,j,j+1);
+        }
+      }
+    }
+  }
+
   private static void swap(int[] l, int i, int j) {
     int temp = l[i];
     l[i] = l[j];
@@ -35,7 +45,8 @@ public final class Sort {
     }
     System.out.println();
 
-    selectionSort(a);
+    // selectionSort(a);
+    bubbleSort(a);
 
     for (int i = 0; i < 10; ++i) {
       System.out.print(a[i] + " ");
