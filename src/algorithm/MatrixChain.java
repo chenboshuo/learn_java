@@ -15,11 +15,11 @@ public final class MatrixChain {
    * Given a sequence of matrices, find the most efficient way to multiply these
    * matrices together
    * 
-   * @param shapes     represents the chain of matrices such that the ith matrix
-   *                   Ai is of dimension shapes[i-1] x shapes[i]
+   * @param shapes    represents the chain of matrices such that the ith matrix Ai
+   *                  is of dimension shapes[i-1] x shapes[i]
    * @param breakLocs the break locations of the matrixes, break_loc[i][j] means
-   *                   the ith multiplication breaks showns p[0] x p[1] ... p[j-1]
-   *                   x p[j]... (A_1 ... A_j)(...)
+   *                  the ith multiplication breaks showns p[0] x p[1] ... p[j-1]
+   *                  x p[j]... (A_1 ... A_j)(...)
    * @return Minimum number of multiplications
    */
   public static int minMatrixChain(int[] shapes, int[][] breakLocs) {
@@ -32,12 +32,12 @@ public final class MatrixChain {
   /**
    * find the minimum number of multiplications using recursion
    * 
-   * @param shapes     represents the chain of matrices such that the ith matrix
-   *                   Ai is of dimension shapes[i-1] x shapes[i]
-   * @param breakLocs the break locations of the matrixes, breakLocs[i][j] = k
-   *                   means the matrix series (Ai x A_i+1 ... A_k)(A_k+1 ... Aj)
-   * @param left       矩阵链的起始位置,i>0
-   * @param right      矩阵链的结束位置,j<=n
+   * @param shapes    represents the chain of matrices such that the ith matrix Ai
+   *                  is of dimension shapes[i-1] x shapes[i]
+   * @param breakLocs the break locations of the matrixes, breakLocs[i][j] = space
+   *                  means the matrix series (Ai x A_i+1 ... A_k)(A_k+1 ... Aj)
+   * @param left      矩阵链的起始位置,i>0
+   * @param right     矩阵链的结束位置,j<=n
    * @return Minimum number of multiplications
    */
   public static int recurMatrixChain(int[] shapes, int[][] breakLocs, int left, int right) {
@@ -45,9 +45,9 @@ public final class MatrixChain {
       return 0;
     }
     int minMultiplications = Integer.MAX_VALUE;
-    for (int i = left ; i < right; ++i) {
+    for (int i = left; i < right; ++i) {
       int u = recurMatrixChain(shapes, breakLocs, left, i) + recurMatrixChain(shapes, breakLocs, i + 1, right)
-          + shapes[left-1] * shapes[i] * shapes[right];
+          + shapes[left - 1] * shapes[i] * shapes[right];
       if (u < minMultiplications) {
         minMultiplications = u;
         breakLocs[left][right] = i;
@@ -61,22 +61,35 @@ public final class MatrixChain {
    * 
    * @param shapes    represents the chain of matrices such that the ith matrix Ai
    *                  is of dimension shapes[i-1] x shapes[i]
-   * @param breakLocs the break locations of the matrixes, breakLocs[i][j] = k
+   * @param breakLocs the break locations of the matrixes, breakLocs[i][j] = space
    *                  means the matrix series (Ai x A_i+1 ... A_k)(A_k+1 ... Aj)
    * @return Minimum number of multiplications
    */
   public static int matrixChain(int[] shapes, int[][] breakLocs) {
-    int [][] memo = new int[shapes.length][shapes.length];
-    for(int i=0;i<shapes.length;++i){
+    int[][] memo = new int[shapes.length][shapes.length];
+     
+    // initialize the breakLocs matrix
+    for(int i=0;i<breakLocs.length;++i){
+      for(int j=0;j<breakLocs.length;++j){
+        breakLocs[i][j] = -1;
+      }
+    }
+
+    // if left == right times = 0
+    for (int i = 0; i < shapes.length; ++i) {
       memo[i][i] = 0;
     }
-    for(int right = 0;right < shapes.length;++right){
-      for(int left=right-1; left>0;--left){
-        int minMultiplications = Integer.MAX_VALUE;
-        for(int breaks=left;breaks<right;++breaks){
-          int u = memo[left][breaks] + memo[breaks+1][right] + shapes[left-1] * shapes[breaks] * shapes[right];
-          if(u < minMultiplications){
-            minMultiplications = u;
+
+    // find the solution
+    for (int space = 1; space < shapes.length; ++space) {
+      for (int left = 1; left + space < shapes.length; ++left) {
+        int right = left + space;
+        memo[left][right] = Integer.MAX_VALUE;
+        for (int breaks = left; breaks < right; ++breaks) {
+          int u = memo[left][breaks] + memo[breaks + 1][right] 
+            + shapes[left - 1] * shapes[breaks] * shapes[right];
+          if (u < memo[left][right]) {
+            memo[left][right] = u;
             breakLocs[left][right] = breaks;
           }
         }
