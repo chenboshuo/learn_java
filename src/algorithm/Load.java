@@ -8,8 +8,8 @@ final class Loading{
   private int[] weights;
   private int[] values; // the array of items' values
   private int capacity; // the capacity of the bag
-  private int[] solution; // the current solution
-  private int[] bestSolution; // the best solution 
+  private int[] curLoading; // the current solution
+  private int[] loadPlan; // the best solution 
   private int curWeight;  // current weights;
   private int curValue;  // current value;
   private int maxValue; // the best value;
@@ -27,11 +27,11 @@ final class Loading{
     this.curValue = 0;
     this.curWeight = 0;
     this.remainWeight = capacity;
-    this.solution = new int[itemsSize];
-    this.bestSolution = new int[itemsSize];
+    this.curLoading = new int[itemsSize];
+    this.loadPlan = new int[itemsSize];
     this.remainValue = 0;
-    for(int j=0;j<itemsSize;++j){
-      this.remainValue += values[j];
+    for(int itemValue: values){
+      this.remainValue += itemValue;
     }
   }
 
@@ -42,15 +42,16 @@ final class Loading{
     if(i == itemsSize){
       if(curValue > maxValue){
         maxValue = curValue;
-        for(int j=0;j<itemsSize;++j){
-          bestSolution[j] = solution[j];
-        }
+        // for(int j=0;j<itemsSize;++j){
+        //   bestSolution[j] = solution[j];
+        // }
+        loadPlan = curLoading.clone();
       }
       return;
     }
     remainValue -= values[i];
-    if (remainValue+weights[i] <= capacity){ // search left subtree(solution[i] = 1)
-      solution[i] = 1; // load it
+    if (remainWeight+weights[i] <= capacity){ // search left subtree(solution[i] = 1)
+      curLoading[i] = 1; // load it
       curWeight += weights[i];
       curValue += values[i];
       remainValue -= weights[i];
@@ -62,7 +63,7 @@ final class Loading{
 
     // search right subtree(solution[i] = 0)
     if(bound(i)){
-      solution[i] = 0;
+      curLoading[i] = 0;
       backTrack(i+1);
     }
     remainValue += values[i];
@@ -79,7 +80,7 @@ final class Loading{
   }
 
   public int[] getLoadingPlan(){
-    return bestSolution;
+    return loadPlan;
   }
 
 }
